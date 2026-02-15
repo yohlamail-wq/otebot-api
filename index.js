@@ -14,8 +14,9 @@ const apiKey = process.env.OPENAI_API_KEY;
 // --- Auth minimale (V1) ---
 
 // provisoire : un seul user admin en dur, configuré via variables d'env
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@otebot.local';
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || null;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
+
 
 // middleware pour vérifier le JWT
 function authenticateToken(req, res, next) {
