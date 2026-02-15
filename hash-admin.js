@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 
-const password = 'TON_MOT_DE_PASSE_ICI';
+const password = 'MonSuperMotDePasse456!';
 
 bcrypt.hash(password, 10).then(hash => {
   console.log('HASH =', hash);
