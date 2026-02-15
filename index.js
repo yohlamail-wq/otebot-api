@@ -17,7 +17,6 @@ const apiKey = process.env.OPENAI_API_KEY;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
 
-
 // middleware pour vérifier le JWT
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'] || '';
@@ -39,16 +38,25 @@ function authenticateToken(req, res, next) {
 // route de login (admin V1)
 app.post('/auth/login', async (req, res) => {
   const { email, password } = req.body || {};
+
+  // LOGS DEBUG
+  console.log('LOGIN TRY email =', email, 'env ADMIN_EMAIL =', ADMIN_EMAIL);
+  console.log('Has password ?', !!password);
+  console.log('Has ADMIN_PASSWORD_HASH ?', !!ADMIN_PASSWORD_HASH);
+
   if (!email || !password) {
     return res.status(400).json({ error: 'email et password requis' });
   }
 
   if (email !== ADMIN_EMAIL || !ADMIN_PASSWORD_HASH) {
+    console.log('EMAIL_OR_HASH_MISMATCH');
     return res.status(401).json({ error: 'Identifiants invalides' });
   }
 
   try {
     const ok = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+    console.log('BCRYPT RESULT =', ok);
+
     if (!ok) {
       return res.status(401).json({ error: 'Identifiants invalides' });
     }
@@ -96,7 +104,8 @@ app.post('/chat', authenticateToken, async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: "Tu es OtéBot, assistante IA pour un créateur de sites web, SEO et outils digitaux à La Réunion. Tu réponds de façon claire, professionnelle mais chaleureuse, et tu restes concise."
+            content:
+              "Tu es OtéBot, assistante IA pour un créateur de sites web, SEO et outils digitaux à La Réunion. Tu réponds de façon claire, professionnelle mais chaleureuse, et tu restes concise."
           },
           {
             role: 'user',
@@ -113,7 +122,9 @@ app.post('/chat', authenticateToken, async (req, res) => {
     }
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "Je n'ai pas pu générer de réponse pour le moment.";
+    const reply =
+      data.choices?.[0]?.message?.content ||
+      "Je n'ai pas pu générer de réponse pour le moment.";
 
     res.json({ reply });
   } catch (err) {
